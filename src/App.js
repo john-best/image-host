@@ -14,15 +14,26 @@ class UploadFiles extends React.Component {
             return;
         }
 
-        var image = uploaded.files[0];
+        var img = uploaded.files[0];
 
-        if (!image.type.match('image.*')) {
+        if (!img.type.match('image.*')) {
             console.log("Error: This file is of an unsupported format... is it an image?");
             uploadstatus.innerHTML = "Error: This file is of an unsupported format... is it an image?"
             return;
         }
 
         console.log("image passes all test cases!");
+
+        fetch('/api/upload', {
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                image: img
+            })
+        });
 
         // probably do some kind of POST to upload api...
 
