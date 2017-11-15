@@ -24,6 +24,8 @@ class UploadFiles extends React.Component {
 
         console.log("image passes all test cases!");
 
+        var formData = new FormData();
+        formData.append('image', img);
         fetch('/api/upload', {
             method: 'POST',
             headers: {
@@ -31,7 +33,7 @@ class UploadFiles extends React.Component {
                 //'Content-Type': 'multipart/form-data', boundary issues if this is sent
                 'type': 'formData'
             },
-            body: img
+            body: formData
         });
 
         console.log({ image: img });

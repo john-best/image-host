@@ -4,11 +4,26 @@ var express = require('express');
 var mongoose = require('mongoose');
 var bodyparser = require('body-parser');
 var multer = require('multer');
+var path = require('path');
+var crypto = require('crypto');
 
 var app = express();
 var router = express.Router();
 var port = process.env.API_PORT || 8421;
-var upload = multer({ dest: 'uploads/' })
+
+
+// image hold
+var storage = multer.diskStorage({
+    destination: 'uploads/',
+    filename: function(req, file, cb) {
+        crypto.pseudoRandomBytes(16, function(err, raw) {
+            if (err) return cb(err);
+
+            cb(null, raw.toString('hex') + path.extname(file.originalname));
+        })
+    }
+});
+var upload = multer({ storage: storage })
 
 
 // accept json data
@@ -37,9 +52,9 @@ router.get('/upload', function(req, res) {
 });
 
 router.post('/upload', upload.single('image'), function(req, res) {
-    // TODO: var image is already uploaded at this point... read more documentation to sanitize this before writing to disk
-    console.log(req.query);
+    // TODO: mimetype check (extension-only check is unsafe)
     console.log(req.file);
+    res.json(req.file);
 });
 
 
