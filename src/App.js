@@ -28,13 +28,13 @@ class UploadFiles extends React.Component {
             method: 'POST',
             headers: {
                 'Accept': 'application/json',
-                'Content-Type': 'application/json',
+                //'Content-Type': 'multipart/form-data', boundary issues if this is sent
+                'type': 'formData'
             },
-            body: JSON.stringify({
-                image: img
-            })
+            body: img
         });
 
+        console.log({ image: img });
         // probably do some kind of POST to upload api...
 
     }
