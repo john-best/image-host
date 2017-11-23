@@ -7,7 +7,7 @@ class UploadFiles extends React.Component {
         var uploaded = document.getElementById("filesToUpload");
         var uploadstatus = document.getElementById("uploadStatus");
         uploadstatus.innerHTML = "";
-     
+  
         if (uploaded.files.length > 1) {
             console.log("Error: This application currently supports the uploading of only one file at a time.");
             uploadstatus.innerHTML = "Error: This application currently supports the uploading of only one file at a time.";
@@ -16,9 +16,14 @@ class UploadFiles extends React.Component {
 
         var img = uploaded.files[0];
 
+        if (typeof img == "undefined") {
+            console.log("Error: Please upload a file!");
+            uploadstatus.innerHTML = "Error: Please upload a file!";
+        }
+
         if (!img.type.match('image.*')) {
             console.log("Error: This file is of an unsupported format... is it an image?");
-            uploadstatus.innerHTML = "Error: This file is of an unsupported format... is it an image?"
+            uploadstatus.innerHTML = "Error: This file is of an unsupported format... is it an image?";
             return;
         }
 
