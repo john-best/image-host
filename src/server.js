@@ -5,7 +5,8 @@ var bodyparser = require('body-parser');
 var multer = require('multer');
 var path = require('path');
 var crypto = require('crypto');
-var fs = require('fs');
+var passport = require('passport');
+var cookieParser = require('cookie-parser');
 
 var app = express();
 var router = express.Router();
@@ -40,32 +41,13 @@ app.use(function(req, res, next) {
     next();
 });
 
+// auth/session stuff
+app.use(cookieParser())
+//app.use(session({ secret: 'helpineedaninternship' }));
+app.use(passport.initialize());
+app.use(passport.session());
 
-// api
-router.get('/', function(req, res) {
-    res.redirect('..');
-});
-
-router.get('/upload', function(req, res) {
-    res.json({ message: 'Error: You must call POST on upload' });
-});
-
-router.post('/upload', upload.single('image'), function(req, res) {
-    // TODO: mimetype check (extension-only check is unsafe)
-    console.log(req.file);
-    //res.json(req.file);
-    res.redirect('/api/' + req.file.filename);
-});
-
-router.get('/:image_url', function(req, res) {
-    var image_path = __dirname + '/../images/' + req.params.image_url;
-   
-    if (fs.existsSync(image_path)) {
-        res.sendFile(path.join(image_path));
-    } else {
-        res.json({message: "Error: File not found!"});
-    }
-});
+require('./routes.js')(app, router, passport, upload);
 
 app.use('/api', router);
 
