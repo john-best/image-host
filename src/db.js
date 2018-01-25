@@ -9,4 +9,14 @@ module.exports  = function(app, passport) {
             console.log("Database successfully accessed");
         }
     });
+
+
+    db.serialize(function() {
+        db.run("CREATE TABLE IF NOT EXISTS Accounts ( \
+            id INTEGER PRIMARY KEY, \
+            username TEXT NOT NULL UNIQUE, \
+            password TEXT NOT NULL, \
+            email TEXT NOT NULL UNIQUE)"
+        );
+    });
 }
