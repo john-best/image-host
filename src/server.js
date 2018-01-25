@@ -24,7 +24,19 @@ var storage = multer.diskStorage({
         })
     }
 });
-var upload = multer({ storage: storage })
+
+// image handling
+var upload = multer({ 
+    storage: storage,
+    fileFilter: function (req, file, cb) {
+        let ext = path.extname(file.originalname);
+        if (ext !==  '.jpg' &&  ext !== '.jpeg' && ext !== '.png' && ext !== '.gif') {
+            return cb(null, false); 
+        }
+
+        cb(null, true);
+    }
+});
 
 
 // accept json data
