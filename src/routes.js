@@ -1,8 +1,9 @@
-module.exports = function(app, router, passport, upload, db) {
+module.exports = function(app, router, upload) {
 
     var fs = require('fs');
     var path = require('path');
-
+    var bcrypt = require('bcrypt');
+    var db = require('./db');
     // you shouldn't be accessing /api/
     router.get('/', function(req, res) {
         res.redirect('..');
@@ -26,16 +27,17 @@ module.exports = function(app, router, passport, upload, db) {
     });
 
 
-    // /register an account TODO: (URGENT) password hashing, email confirmation, refactor to make this not bad code
-    // plaintext password saving is absolutely horrible and i hate myself for now
+    // /register an account TODO: email confirmation, refactor to make this not bad code
     router.post('/register', function(req, res) {
         console.log("Received register request, handling...");
         if (!req.body.username || !req.body.password || !req.body.email) {
             res.json({ success: false, message: 'Missing username/password/email' });
         } else {
-            db.run("INSERT INTO Accounts (username, password, email) VALUES (?,?,?)", [req.body.username, req.body.password, req.body.email], function(err) {
-                if (err) { res.json({ success: false, message: "Username/Email already exists!" }); return err; }
-                else { res.json({ success: true, message: 'User successfully added' }); }
+            bcrypt.hash(req.body.password, 5, function(berr, hash) {
+                db.run("INSERT INTO Accounts (username, password, email) VALUES (?,?,?)", [req.body.username, hash, req.body.email], function(err) {
+                    if (err) { res.json({ success: false, message: "Username/Email already exists!" }); return err; }
+                    else { res.json({ success: true, message: 'User successfully added' }); }
+                });
             });
         }
     });
@@ -46,10 +48,18 @@ module.exports = function(app, router, passport, upload, db) {
         if (!req.body.username || !req.body.password) {
             res.json({ success: false, message: 'Missing username/password' });
         } else {
-            db.all("SELECT * FROM Accounts WHERE username=? AND password=?", [req.body.username, req.body.password], function(err, rows) {
+            db.all("SELECT password FROM Accounts WHERE username=?", [req.body.username], function(err, rows) {
                 if (err) { res.json({ success: false, message: "Database error occured" }); }
                 if (rows.length == 0) { res.json({ success: false, message: "Invalid username/password combination!" }); }
-                else { res.json({ success: true, message: "Successfully logged in.", token: "TODO" }); }
+                else { 
+                    bcrypt.compare(req.body.password, rows[0].password, function(berr, bres) {
+                        if (bres == true) {
+                            res.json({ success: true, message: "Successfully logged in.", token: "TODO" }); 
+                        } else {
+                            res.json({ success: false, message: "Invalid username/password combination!" });
+                        }
+                    });
+                }
             });
         }
     });

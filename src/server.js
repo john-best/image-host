@@ -5,8 +5,6 @@ var bodyparser = require('body-parser');
 var multer = require('multer');
 var path = require('path');
 var crypto = require('crypto');
-var passport = require('passport');
-var cookieParser = require('cookie-parser');
 
 var app = express();
 var router = express.Router();
@@ -53,14 +51,7 @@ app.use(function(req, res, next) {
     next();
 });
 
-// auth/session stuff
-app.use(cookieParser())
-//app.use(session({ secret: 'helpineedaninternship' }));
-app.use(passport.initialize());
-app.use(passport.session());
-
-var db = require('./db.js');
-require('./routes.js')(app, router, passport, upload, db);
+require('./routes.js')(app, router, upload);
 
 app.use('/api', router);
 
