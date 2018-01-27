@@ -1,9 +1,11 @@
-module.exports = function(app, router, upload) {
+module.exports = function(app, router, upload, jwt_secret) {
 
     var fs = require('fs');
     var path = require('path');
     var bcrypt = require('bcrypt');
+    var jwt = require('jsonwebtoken');
     var db = require('./db');
+
     // you shouldn't be accessing /api/
     router.get('/', function(req, res) {
         res.redirect('..');
@@ -43,18 +45,24 @@ module.exports = function(app, router, upload) {
     });
 
     // login to an existing account
+    // jwt expires every so often so this should only be used for web applications
+    // native applications and mobile applications probably need a spearate login system with database entries for keys (to deauthorize)
     router.post('/login', function(req, res) {
         console.log("Received login request, handling...");
         if (!req.body.username || !req.body.password) {
             res.json({ success: false, message: 'Missing username/password' });
         } else {
-            db.all("SELECT password FROM Accounts WHERE username=?", [req.body.username], function(err, rows) {
+            db.all("SELECT * FROM Accounts WHERE username=?", [req.body.username], function(err, rows) {
                 if (err) { res.json({ success: false, message: "Database error occured" }); }
                 if (rows.length == 0) { res.json({ success: false, message: "Invalid username/password combination!" }); }
                 else { 
                     bcrypt.compare(req.body.password, rows[0].password, function(berr, bres) {
                         if (bres == true) {
-                            res.json({ success: true, message: "Successfully logged in.", token: "TODO" }); 
+                            res.json({ 
+                                success: true, 
+                                message: "Successfully logged in.", 
+                                token: jwt.sign({ username: rows[0].username, email: rows[0].email, id: rows[0].id }, jwt_secret, { expiresIn: '1h' })
+                            }); 
                         } else {
                             res.json({ success: false, message: "Invalid username/password combination!" });
                         }
@@ -66,10 +74,10 @@ module.exports = function(app, router, upload) {
 
     // logout from an existing login
     router.post('/logout', function(req, res) {
-        if (!req.body.token) {
+        if (!req.user) {
             res.json({ success: false, message: "Not logged in." });
         } else {
-            res.json({ success: true, message: "TODO" });
+            res.json({ success: true, message: "Logged out." });
         }
     });
 

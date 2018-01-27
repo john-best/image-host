@@ -5,11 +5,12 @@ var bodyparser = require('body-parser');
 var multer = require('multer');
 var path = require('path');
 var crypto = require('crypto');
+var jsonwebtoken = require('jsonwebtoken');
 
 var app = express();
 var router = express.Router();
 var port = process.env.API_PORT || 8421;
-
+var jwt_secret = "helpineedaninternship";
 
 // image hold
 var storage = multer.diskStorage({
@@ -51,7 +52,23 @@ app.use(function(req, res, next) {
     next();
 });
 
-require('./routes.js')(app, router, upload);
+// middleware for checking token
+app.use(function(req, res, next) {
+    if (req.headers && req.headers.authorization && req.headers.authorization.split(' ')[0] == 'JWT') {
+        jsonwebtoken.verify(req.headers.authorization.split(' ')[1], jwt_secret, function(err, out) {
+            if (err) { req.user = undefined; }
+            else { req.user = out; }
+
+            next();
+        });
+    } else {
+        req.user = undefined;
+        next();
+    }
+});
+
+
+require('./routes.js')(app, router, upload, jwt_secret);
 
 app.use('/api', router);
 
