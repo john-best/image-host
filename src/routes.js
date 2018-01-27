@@ -19,12 +19,19 @@ module.exports = function(app, router, upload, jwt_secret) {
     // /upload uploads image to server, returning a url to image if successful
     router.post('/upload', upload.single('image'), function(req, res) {
         // TODO extension-only checking is unsafe, but for private use it should be ok
-        if (typeof req.file == 'undefined') {
-            res.json({ success: false, message: 'File rejected. Are you sure it\'s an image?' });
-        }
-        else { 
-            var url_ = req.protocol + '://' + req.get('host');
-            res.json({ success: true, url: url_ + '/api/' + req.file.filename }); 
+
+        if (req.user) {
+            // TODO: store image urls into database belonging to uploader
+            console.log("Received upload request from user " + req.user.username + ", handling...");
+            if (typeof req.file == 'undefined') {
+                res.json({ success: false, message: 'File rejected. Are you sure it\'s an image?' });
+            }
+            else { 
+                var url_ = req.protocol + '://' + req.get('host');
+                res.json({ success: true, url: url_ + '/api/' + req.file.filename }); 
+            }
+        } else {
+                res.json({ success: false, message: 'User not authorized to upload-- are you logged in?'});
         }
     });
 
