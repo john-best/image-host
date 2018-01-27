@@ -59,8 +59,8 @@ app.use(cookieParser())
 app.use(passport.initialize());
 app.use(passport.session());
 
-require('./db.js')(app, passport);
-require('./routes.js')(app, router, passport, upload);
+var db = require('./db.js');
+require('./routes.js')(app, router, passport, upload, db);
 
 app.use('/api', router);
 
