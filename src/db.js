@@ -16,6 +16,12 @@ db.serialize(function() {
         username TEXT NOT NULL UNIQUE, \
         password TEXT NOT NULL, \
         email TEXT NOT NULL UNIQUE)");
+
+    db.run("CREATE TABLE IF NOT EXISTS Images ( \
+        id INTEGER PRIMARY KEY, \
+        filename TEXT NOT NULL, \
+        userid INTEGER NOT NULL, \
+        FOREIGN KEY (userid) REFERENCES Accounts(id))");
 });
 
 
