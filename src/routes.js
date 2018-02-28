@@ -28,14 +28,12 @@ module.exports = function (app, router, upload, jwt_secret) {
                 _userid = rows[0].id;
 
                 console.log("Received upload request from user " + req.user.username + ", id: " + _userid + ", handling...");
-
                 if (typeof req.file == 'undefined') {
                     res.json({ success: false, message: 'File rejected. Are you sure it\'s an image?' });
                     return;
                 }
-
                 else {
-                    db.run("INSERT INTO Images (filename, userid) VALUES (?,?)", [req.file.filename, _userid]);
+                    db.run("INSERT INTO Images (filename, userid, upload_date) VALUES (?,?, datetime('now'))", [req.file.filename, _userid]);
                     var url_ = req.protocol + '://' + req.get('host');
                     res.json({ success: true, url: url_ + '/api/' + req.file.filename, username: req.user.username, userid: _userid });
                     return;
@@ -56,7 +54,7 @@ module.exports = function (app, router, upload, jwt_secret) {
             res.json({ success: false, message: 'Missing username/password/email' });
         } else {
             bcrypt.hash(req.body.password, 5, function (berr, hash) {
-                db.run("INSERT INTO Accounts (username, password, email) VALUES (?,?,?)", [req.body.username, hash, req.body.email], function (err) {
+                db.run("INSERT INTO Accounts (username, password, email, register_date) VALUES (?,?,?,datetime('now'))", [req.body.username, hash, req.body.email], function (err) {
                     if (err) { res.json({ success: false, message: "Username/Email already exists!" }); return err; }
                     else { res.json({ success: true, message: 'User successfully added' }); }
                 });
@@ -119,7 +117,7 @@ module.exports = function (app, router, upload, jwt_secret) {
             if (rows.length == 0) { res.json({ success: false, message: "no user found!" }); }
             else {
                 var _userid = rows[0].id;
-                db.all("SELECT filename FROM Images where userid=(?)", [_userid], function (err, rows) {
+                db.all("SELECT filename, upload_date FROM Images where userid=(?)", [_userid], function (err, rows) {
                     if (err) { res.json({ success: false, message: "db error has occured" }); }
                     if (rows.length == 0) { res.json({ success: true, images: [] }); }
                     else {
