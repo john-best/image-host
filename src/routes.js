@@ -94,10 +94,11 @@ module.exports = function (app, router, upload, jwt_secret) {
 
     // logout from an existing login
     router.post('/logout', function (req, res) {
-        if (!req.user) {
+        if (!req.token) {
             res.json({ success: false, message: "Not logged in." });
         } else {
-            res.json({ success: true, message: "Logged out." });
+            // TODO: delete token from database
+            res.json({ success: partial, message: "TODO" });
         }
     });
 
@@ -110,6 +111,27 @@ module.exports = function (app, router, upload, jwt_secret) {
         } else {
             res.json({ success: false, message: "Error: File not found!" });
         }
+    });
+
+    router.get('/:username/images', function (req, res) {
+        db.all("SELECT id FROM Accounts WHERE username=(?)", [req.user.username], function (err, rows) {
+            if (err) { res.json({ success: false, message: "db error has occured" }); }
+            if (rows.length == 0) { res.json({ success: false, message: "no user found!" }); }
+            else {
+                var _userid = rows[0].id;
+                db.all("SELECT filename FROM Images where userid=(?)", [_userid], function (err, rows) {
+                    if (err) { res.json({ success: false, message: "db error has occured" }); }
+                    if (rows.length == 0) { res.json({ success: true, images: [] }); }
+                    else {
+                        images = []
+                        rows.forEach(function (item) {
+                            images.push(item);
+                        });
+                        res.json({ success: true, images: images});
+                    }
+                });
+            }
+        });
     });
 
     app.use('/api', router);
