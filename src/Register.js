@@ -2,26 +2,26 @@ import React, { Component } from 'react';
 import { withRouter } from 'react-router-dom';
 import { FormControl, FormGroup, Button, ControlLabel, Alert } from 'react-bootstrap';
 
-
+// TODO: we could prob merge this with authhandler...
 const API_URL = 'http://mingler.org:8421'
-class AuthHandler extends Component {
+class Register extends Component {
     constructor(props) {
         super(props);
-        this.logout = this.logout.bind(this);
-        this.login = this.login.bind(this);
+        this.register = this.register.bind(this);
 
         this.state = {
             username: '',
             password: '',
-            login_error: false,
-            login_error_msg: ''
+            email: '',
+            register_error: false,
+            register_error_msg: ''
         }
     }
 
-    login = event => {
+    register = event => {
         event.preventDefault();
 
-        fetch(API_URL + '/api/login', {
+        fetch(API_URL + '/api/register', {
             method: 'POST',
             headers: {
                 Accept: 'application/json',
@@ -30,50 +30,41 @@ class AuthHandler extends Component {
             },
             body: JSON.stringify({
                 username: this.state.username,
-                password: this.state.password
+                password: this.state.password,
+                email: this.state.email
             }),
         })
             .then((response) => response.json())
             .then((responseJson) => {
                 console.log(responseJson.message)
                 if (responseJson.success) {
-                    localStorage.setItem('jwt_token', responseJson.token);
-                    localStorage.setItem('logged_in', "true")
-                    this.props.setAppState({ logged_in: true });
+                    // TODO: do we let the server do an auto login, or do we let the client do that?
                     this.props.history.push("/");
                 } else {
-                    this.setState({ login_error: true, login_error_msg: responseJson.message })
+                    this.setState({ register_error: true, register_error_msg: responseJson.message })
+                    this.forceUpdate();
                 }
             });
-    }
-
-    // TODO: blacklist logged-out jwt tokens until they expire themselves? do we really need to do this for jwt tokens?
-    logout() {
-        localStorage.removeItem('jwt_token');
-        localStorage.setItem('logged_in', "false")
-        this.props.setAppState({ logged_in: false });
-        this.props.history.push("/");
     }
 
     handleChange = event => {
         this.setState({ [event.target.id]: event.target.value });
     }
 
-    // we don't need to render if we're just logging out...
+    // why are you registering when logged in?
     componentWillMount() {
         if (this.props.appState.logged_in) {
-            this.logout();
+            this.props.history.push("/");
         }
     }
 
     render() {
-        // this should only render for login
-        const errmsg = this.state.login_error ? (<Alert bsStyle="danger">{this.state.login_error_msg}</Alert>) : (<div></div>)
-
+        const errmsg = this.state.register_error ? (<Alert bsStyle="danger">{this.state.register_error_msg}</Alert>) : (<div></div>)
+        
         return (
             <div>
                 {errmsg}
-                <form onSubmit={this.login}>
+                <form onSubmit={this.register}>
                     <FormGroup controlId="username">
                         <ControlLabel>Username</ControlLabel>
                         <FormControl autoFocus type="text" value={this.state.username} placeholder="Username" onChange={this.handleChange} />
@@ -82,11 +73,15 @@ class AuthHandler extends Component {
                         <ControlLabel>Password</ControlLabel>
                         <FormControl type="password" value={this.state.password} placeholder="Password" onChange={this.handleChange} />
                     </FormGroup>
-                    <Button type="submit">Login</Button>
+                    <FormGroup controlId="email">
+                        <ControlLabel>Email</ControlLabel>
+                        <FormControl type="email" value={this.state.email} placeholder="me@example.com" onChange={this.handleChange} />
+                    </FormGroup>
+                    <Button type="submit">Register</Button>
                 </form>
             </div>
         );
     }
 }
 
-export default withRouter(AuthHandler);
+export default withRouter(Register);
