@@ -32,7 +32,6 @@ var upload = multer({
         if (ext !==  '.jpg' &&  ext !== '.jpeg' && ext !== '.png' && ext !== '.gif') {
             return cb(null, false); 
         }
-
         cb(null, true);
     }
 });
