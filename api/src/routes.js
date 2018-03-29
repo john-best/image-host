@@ -56,7 +56,18 @@ module.exports = function (app, router, upload, jwt_secret) {
             bcrypt.hash(req.body.password, 5, function (berr, hash) {
                 db.run("INSERT INTO Accounts (username, password, email, register_date) VALUES (?,?,?,datetime('now'))", [req.body.username, hash, req.body.email], function (err) {
                     if (err) { res.json({ success: false, message: "Username/Email already exists!" }); return err; }
-                    else { res.json({ success: true, message: 'User successfully added' }); }
+                    else {
+                        db.all("SELECT username, email, id FROM Accounts WHERE username=?", [req.body.username], function (err, rows) {
+                            if (err) { res.json({ success: false, message: "Database error occured" }); }
+                            if (rows.length == 0) { res.json({ success: false, message: "Something horrible has happened..." }); }
+                            else {
+                                res.json({
+                                    success: true, message: 'User successfully added',
+                                    token: jwt.sign({ username: rows[0].username, email: rows[0].email, id: rows[0].id }, jwt_secret, { expiresIn: '1h' })
+                                });
+                            }
+                        })
+                    }
                 });
             });
         }
@@ -125,7 +136,7 @@ module.exports = function (app, router, upload, jwt_secret) {
                         rows.forEach(function (item) {
                             images.push(item);
                         });
-                        res.json({ success: true, images: images});
+                        res.json({ success: true, images: images });
                     }
                 });
             }

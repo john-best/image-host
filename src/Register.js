@@ -36,13 +36,13 @@ class Register extends Component {
         })
             .then((response) => response.json())
             .then((responseJson) => {
-                console.log(responseJson.message)
                 if (responseJson.success) {
-                    // TODO: do we let the server do an auto login, or do we let the client do that?
+                    localStorage.setItem('jwt_token', responseJson.token);
+                    localStorage.setItem('logged_in', "true")
+                    this.props.setAppState({ logged_in: true });
                     this.props.history.push("/");
                 } else {
                     this.setState({ register_error: true, register_error_msg: responseJson.message })
-                    this.forceUpdate();
                 }
             });
     }
