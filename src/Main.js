@@ -23,7 +23,8 @@ class Main extends Component {
                     <Route path="profile/:username" component={Profile} />
                     <Route path="/login" render={() => (<AuthHandler appState={this.props.appState} setAppState={this.props.setAppState} />)} />
                     <Route path="/logout" render={() => (<AuthHandler appState={this.props.appState} setAppState={this.props.setAppState} />)} />
-                    <Route path="/image/:imgurl" component={Image} />
+                    <Route path="/404" component={Error_404} />
+                    <Route path="/:imgurl" component={Image} /> 
                     <Route path="*" component={Error_404} />
                 </Switch>
 

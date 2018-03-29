@@ -107,7 +107,7 @@ module.exports = function (app, router, upload, jwt_secret) {
         if (fs.existsSync(image_path)) {
             res.sendFile(path.join(image_path));
         } else {
-            res.json({ success: false, message: "Error: File not found!" });
+            res.status(404).send('Image not found!');
         }
     });
 

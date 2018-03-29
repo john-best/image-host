@@ -69,8 +69,8 @@ class AuthHandler extends Component {
 
     render() {
         // this should only render for login
-
         const errmsg = this.state.login_error ? (<Alert bsStyle="danger">{this.state.login_error_msg}</Alert>) : (<div></div>)
+        
         return (
             <div>
                 {errmsg}
