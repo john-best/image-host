@@ -37,7 +37,7 @@ class AuthHandler extends Component {
             .then((responseJson) => {
                 console.log(responseJson.message)
                 if (responseJson.success) {
-                    localStorage.setItem('jwt_token', responseJson.token);
+                    localStorage.setItem('jwt_token', "JWT " + responseJson.token);
                     localStorage.setItem('logged_in', "true")
                     this.props.setAppState({ logged_in: true });
                     this.props.history.push("/");

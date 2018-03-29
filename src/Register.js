@@ -37,7 +37,7 @@ class Register extends Component {
             .then((response) => response.json())
             .then((responseJson) => {
                 if (responseJson.success) {
-                    localStorage.setItem('jwt_token', responseJson.token);
+                    localStorage.setItem('jwt_token', "JWT " + responseJson.token);
                     localStorage.setItem('logged_in', "true")
                     this.props.setAppState({ logged_in: true });
                     this.props.history.push("/");

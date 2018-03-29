@@ -16,6 +16,24 @@ module.exports = function (app, router, upload, jwt_secret) {
         res.json({ message: 'Error: You must call POST on upload' });
     });
 
+    // update token if possible, otherwise let the user know that their session has expired
+    router.post('/update', function (req, res) {
+        if (req.user) {
+            db.all("SELECT username, email, id FROM Accounts WHERE username=?", [req.user.username], function (err, rows) {
+                if (err) { res.json({ success: false, message: "Database error occured" }); }
+                if (rows.length == 0) { res.json({ success: false, message: "Something horrible has happened..." }); }
+                else {
+                    res.json({
+                        success: true, message: 'Token updated',
+                        token: jwt.sign({ username: rows[0].username, email: rows[0].email, id: rows[0].id }, jwt_secret, { expiresIn: '1h' })
+                    });
+                }
+            });
+        } else {
+            res.json({ success: false, message: 'Token has expired. Please login to get a new token.' })
+        }
+    });
+
     // /upload uploads image to server, returning a url to image if successful
     router.post('/upload', upload.single('image'), function (req, res) {
         // TODO extension-only checking is unsafe, but for private use it should be ok
