@@ -7,16 +7,12 @@ class TestNavbar extends Component {
     render() {
         const login_logout = this.props.logged_in ? (
             <LinkContainer to="/logout">
-                <NavItem eventKey={1}>
-                    Logout
-                </NavItem>
+                <NavItem eventKey={1}>Logout</NavItem>
             </LinkContainer>
         ) : (
-            <LinkContainer to="/login">
-                <NavItem eventKey={1} href="/login">
-                    Login
-                </NavItem>
-            </LinkContainer>
+                <LinkContainer to="/login">
+                    <NavItem eventKey={1} href="/login">Login</NavItem>
+                </LinkContainer>
             )
 
         const profile_register = this.props.logged_in ? (
@@ -24,9 +20,17 @@ class TestNavbar extends Component {
                 <NavItem eventKey={2}>Profile</NavItem>
             </LinkContainer>
         ) : (
-            <LinkContainer to="/Register">
-                <NavItem eventKey={3}>Register</NavItem>
+                <LinkContainer to="/Register">
+                    <NavItem eventKey={2}>Register</NavItem>
+                </LinkContainer>
+            )
+
+        const upload_noupload = this.props.logged_in ? (
+            <LinkContainer to="/upload">
+                <NavItem eventKey={3}>Upload</NavItem>
             </LinkContainer>
+        ) : (
+            null
             )
 
         return (
@@ -42,6 +46,7 @@ class TestNavbar extends Component {
                     <Nav>
                         {login_logout}
                         {profile_register}
+                        {upload_noupload}
                     </Nav>
                 </Navbar>
             </div>

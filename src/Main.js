@@ -9,6 +9,7 @@ import AuthHandler from './AuthHandler';
 import Image from './Image';
 import Error_404 from './404';
 import Register from './Register';
+import Upload from './Upload';
 
 class Main extends Component {
 
@@ -25,6 +26,7 @@ class Main extends Component {
                     <Route path="/login" render={() => (<AuthHandler appState={this.props.appState} setAppState={this.props.setAppState} />)} />
                     <Route path="/logout" render={() => (<AuthHandler appState={this.props.appState} setAppState={this.props.setAppState} />)} />
                     <Route path="/register" render={() => (<Register appState={this.props.appState} setAppState={this.props.setAppState} />)} />
+                    <Route path="/upload" render={() => (<Upload appState={this.props.appState} setAppState={this.props.setAppState} />)} />
                     <Route path="/404" component={Error_404} />
                     <Route path="/:imgurl" component={Image} /> 
                     <Route path="*" component={Error_404} />

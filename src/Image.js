@@ -13,7 +13,6 @@ class Image extends Component {
         }
     }
 
-
     componentDidMount() {
         const imgurl = this.props.match.params.imgurl;
 
@@ -31,12 +30,7 @@ class Image extends Component {
     }
 
     render() {
-
-        console.log(typeof(this.state.image_url));
         var image_html = this.state.image_exists ? (<img src={this.state.image_url} alt=""></img>) : (<div></div>)
-        console.log(typeof(image_html));
-
-        console.log()
         return (
             <div><center>{image_html}</center></div>
         );

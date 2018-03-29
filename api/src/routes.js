@@ -47,13 +47,13 @@ module.exports = function (app, router, upload, jwt_secret) {
 
                 console.log("Received upload request from user " + req.user.username + ", id: " + _userid + ", handling...");
                 if (typeof req.file == 'undefined') {
-                    res.json({ success: false, message: 'File rejected. Are you sure it\'s an image?' });
+                    res.json({ success: false, message: 'File rejected. Are you sure it\'s an image?'});
                     return;
                 }
                 else {
                     db.run("INSERT INTO Images (filename, userid, upload_date) VALUES (?,?, datetime('now'))", [req.file.filename, _userid]);
                     var url_ = req.protocol + '://' + req.get('host');
-                    res.json({ success: true, url: url_ + '/api/' + req.file.filename, username: req.user.username, userid: _userid });
+                    res.json({ success: true, url: url_ + '/api/' + req.file.filename, filename: req.file.filename, username: req.user.username, userid: _userid });
                     return;
                 }
             });
