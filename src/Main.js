@@ -21,8 +21,8 @@ class Main extends Component {
 
                 <Switch>
                     <Route exact path="/" component={Home} />
-                    <Route path="/profile" component={Profile} />
-                    <Route path="profile/:username" component={Profile} />
+                    <Route path="/profile/:username" render={() => (<Profile appState={this.props.appState} setAppState={this.props.setAppState} refresh={this.props.refresh} />)} />
+                    <Route path="/profile" render={() => (<Profile appState={this.props.appState} setAppState={this.props.setAppState} refresh={this.props.refresh} />)} />
                     <Route path="/login" render={() => (<AuthHandler appState={this.props.appState} setAppState={this.props.setAppState} />)} />
                     <Route path="/logout" render={() => (<AuthHandler appState={this.props.appState} setAppState={this.props.setAppState} />)} />
                     <Route path="/register" render={() => (<Register appState={this.props.appState} setAppState={this.props.setAppState} />)} />

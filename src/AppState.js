@@ -13,7 +13,7 @@ class AppState extends Component {
         this.refresh = this.refresh.bind(this);
     }
 
-    // verify every time we mount... but there should be a better or more frequent time to verify? 
+    // refresh every time we mount... but there should be a better or more frequent time to refresh? 
     componentWillMount() {
         this.refresh();
     }

@@ -42,7 +42,7 @@ module.exports = function (app, router, upload, jwt_secret) {
         multer_upload(req, res, function (err) {
             // catch uploading errors (file size too big, etc.)
             if (err) {
-                res.json({ success: false, message: "File too large! (probably). Otherwise, something internal went wrong..." });
+                res.json({ success: false, message: "File too large (probably)! Otherwise, something internal went wrong..." });
                 return;
             }
 
@@ -138,18 +138,7 @@ module.exports = function (app, router, upload, jwt_secret) {
         }
     });
 
-    // /image.ext, returns image if found, otherwise failure
-    router.get('/:image_url', function (req, res) {
-        var image_path = __dirname + '/../images/' + req.params.image_url;
-
-        if (fs.existsSync(image_path)) {
-            res.sendFile(path.join(image_path));
-        } else {
-            res.status(404).send('Image not found!');
-        }
-    });
-
-    router.get('/:username/images', function (req, res) {
+    router.get('/profile/:username', function (req, res) {
         db.all("SELECT id FROM Accounts WHERE username=(?)", [req.user.username], function (err, rows) {
             if (err) { res.json({ success: false, message: "db error has occured" }); }
             if (rows.length == 0) { res.json({ success: false, message: "no user found!" }); }
@@ -168,6 +157,26 @@ module.exports = function (app, router, upload, jwt_secret) {
                 });
             }
         });
+    });
+
+    router.get('/get_user', function (req, res) {
+        if (req.user) {
+            return res.json({ success: true, username: req.user.username });
+        } else {
+            return res.json({ success: false, message: "You must be logged in to get username!" });
+        }
+    });
+
+
+    // /image.ext, returns image if found, otherwise failure
+    router.get('/:image_url', function (req, res) {
+        var image_path = __dirname + '/../images/' + req.params.image_url;
+
+        if (fs.existsSync(image_path)) {
+            res.sendFile(path.join(image_path));
+        } else {
+            res.status(404).send('Image not found!');
+        }
     });
 
     app.use('/api', router);
