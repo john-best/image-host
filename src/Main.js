@@ -26,7 +26,7 @@ class Main extends Component {
                     <Route path="/login" render={() => (<AuthHandler appState={this.props.appState} setAppState={this.props.setAppState} />)} />
                     <Route path="/logout" render={() => (<AuthHandler appState={this.props.appState} setAppState={this.props.setAppState} />)} />
                     <Route path="/register" render={() => (<Register appState={this.props.appState} setAppState={this.props.setAppState} />)} />
-                    <Route path="/upload" render={() => (<Upload appState={this.props.appState} setAppState={this.props.setAppState} />)} />
+                    <Route path="/upload" render={() => (<Upload appState={this.props.appState} setAppState={this.props.setAppState} refresh={this.props.refresh} />)} />
                     <Route path="/404" component={Error_404} />
                     <Route path="/:imgurl" component={Image} /> 
                     <Route path="*" component={Error_404} />

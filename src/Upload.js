@@ -17,10 +17,10 @@ class Upload extends Component {
 
     upload = event => {
         event.preventDefault();
-        this.setState({upload_error: false, upload_error_msg: ''});
+        this.setState({ upload_error: false, upload_error_msg: '' });
 
         if (this.state.image === '') {
-            this.setState({upload_error: true, upload_error_msg: 'No image is being uploaded!'});
+            this.setState({ upload_error: true, upload_error_msg: 'No image is being uploaded!' });
             return;
         }
 
@@ -54,6 +54,9 @@ class Upload extends Component {
 
     // you need to be logged in to upload
     componentWillMount() {
+
+        // i'm pretty sure this doesn't work because by the time logged_in is checked, refresh() isn't done... need to make it a callback TODO
+        this.props.refresh();
         if (!this.props.appState.logged_in) {
             this.props.history.push("/");
         }

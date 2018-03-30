@@ -34,7 +34,7 @@ var upload = multer({
         }
         cb(null, true);
     },
-    limits: { fileSize: 1048576 } // 5MB
+    limits: { fileSize: 1048576 * 5 } // 1MB * 5 = 5MB
 });
 
 

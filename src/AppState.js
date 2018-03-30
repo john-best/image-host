@@ -10,10 +10,15 @@ class AppState extends Component {
             logged_in: localStorage.getItem('logged_in') === "true"
         };
         this.setAppState = this.setAppState.bind(this);
+        this.refresh = this.refresh.bind(this);
     }
 
     // verify every time we mount... but there should be a better or more frequent time to verify? 
     componentWillMount() {
+        this.refresh();
+    }
+
+    refresh() {
         if (this.state.logged_in) {
             fetch(API_URL + '/api/update', {
                 method: 'POST',
@@ -52,9 +57,10 @@ class AppState extends Component {
         });
     }
 
+    
     render() {
         return (
-            <Main appState={this.state} setAppState={this.setAppState} />
+            <Main appState={this.state} setAppState={this.setAppState} refresh={this.refresh} />
         );
     }
 }

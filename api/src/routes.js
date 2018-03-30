@@ -35,33 +35,42 @@ module.exports = function (app, router, upload, jwt_secret) {
     });
 
     // /upload uploads image to server, returning a url to image if successful
-    router.post('/upload', upload.single('image'), function (req, res) {
+
+    var multer_upload = upload.single('image')
+    router.post('/upload', function (req, res) {
         // TODO extension-only checking is unsafe, but for private use it should be ok
+        multer_upload(req, res, function (err) {
+            // catch uploading errors (file size too big, etc.)
+            if (err) {
+                res.json({ success: false, message: "File too large! (probably). Otherwise, something internal went wrong..." });
+                return;
+            }
 
-        if (req.user) {
-            var _userid = "";
-            db.all("SELECT id FROM Accounts WHERE username=(?)", [req.user.username], function (err, rows) {
-                if (err) { res.json({ success: false, message: 'database error has occured.' }); return; }
-                else if (rows.length == 0) { res.json({ success: false, message: 'user does not exist.' }); return; }
-                _userid = rows[0].id;
+            if (req.user) {
+                var _userid = "";
+                db.all("SELECT id FROM Accounts WHERE username=(?)", [req.user.username], function (err, rows) {
+                    if (err) { res.json({ success: false, message: 'database error has occured.' }); return; }
+                    else if (rows.length == 0) { res.json({ success: false, message: 'user does not exist.' }); return; }
+                    _userid = rows[0].id;
 
-                console.log("Received upload request from user " + req.user.username + ", id: " + _userid + ", handling...");
-                if (typeof req.file == 'undefined') {
-                    res.json({ success: false, message: 'File rejected. Are you sure it\'s an image?'});
-                    return;
-                }
-                else {
-                    db.run("INSERT INTO Images (filename, userid, upload_date) VALUES (?,?, datetime('now'))", [req.file.filename, _userid]);
-                    var url_ = req.protocol + '://' + req.get('host');
-                    res.json({ success: true, url: url_ + '/api/' + req.file.filename, filename: req.file.filename, username: req.user.username, userid: _userid });
-                    return;
-                }
-            });
+                    console.log("Received upload request from user " + req.user.username + ", id: " + _userid + ", handling...");
+                    if (typeof req.file == 'undefined') {
+                        res.json({ success: false, message: 'File rejected. Are you sure it\'s an image?' });
+                        return;
+                    }
+                    else {
+                        db.run("INSERT INTO Images (filename, userid, upload_date) VALUES (?,?, datetime('now'))", [req.file.filename, _userid]);
+                        var url_ = req.protocol + '://' + req.get('host');
+                        res.json({ success: true, url: url_ + '/api/' + req.file.filename, filename: req.file.filename, username: req.user.username, userid: _userid });
+                        return;
+                    }
+                });
 
-        } else {
-            res.json({ success: false, message: 'User not authorized to upload-- are you logged in?' });
-            return;
-        }
+            } else {
+                res.json({ success: false, message: 'User not authorized to upload-- are you logged in?' });
+                return;
+            }
+        })
     });
 
 
