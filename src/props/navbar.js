@@ -20,7 +20,7 @@ class TestNavbar extends Component {
                 <NavItem eventKey={2}>Profile</NavItem>
             </LinkContainer>
         ) : (
-                <LinkContainer to="/Register">
+                <LinkContainer to="/register">
                     <NavItem eventKey={2}>Register</NavItem>
                 </LinkContainer>
             )

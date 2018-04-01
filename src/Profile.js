@@ -70,7 +70,7 @@ class Profile extends Component {
                     image_array.push(<Image key={i} imgurl={that.state.images[i].filename} uploader={that.state.username} upload_date={that.state.images[i].upload_date} />)
 
                     // 5 images
-                    if (i > 4) {
+                    if (i >= 4) {
                         image_array.push(<center key={"key end"}>more images... but you've hit the history limit!</center>)
                         break;
                     }
