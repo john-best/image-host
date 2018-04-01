@@ -139,12 +139,12 @@ module.exports = function (app, router, upload, jwt_secret) {
     });
 
     router.get('/profile/:username', function (req, res) {
-        db.all("SELECT id FROM Accounts WHERE username=(?)", [req.user.username], function (err, rows) {
+        db.all("SELECT id FROM Accounts WHERE username=(?)", [req.params.username], function (err, rows) {
             if (err) { res.json({ success: false, message: "db error has occured" }); }
             if (rows.length == 0) { res.json({ success: false, message: "no user found!" }); }
             else {
                 var _userid = rows[0].id;
-                db.all("SELECT filename, upload_date FROM Images where userid=(?)", [_userid], function (err, rows) {
+                db.all("SELECT filename, upload_date FROM Images where userid=(?) ORDER BY upload_date DESC", [_userid], function (err, rows) {
                     if (err) { res.json({ success: false, message: "db error has occured" }); }
                     if (rows.length == 0) { res.json({ success: true, images: [] }); }
                     else {
@@ -167,6 +167,24 @@ module.exports = function (app, router, upload, jwt_secret) {
         }
     });
 
+
+    router.get('/get_image_info/:filename', function (req, res) {
+        var temp_filename = req.params.filename;
+        db.all("SELECT * FROM Images WHERE filename=(?)", [temp_filename], function (err, rows_images) {
+            if (err) { res.json({ success: false, message: "db error has occured" }); }
+            if (rows_images.length == 0) { res.json({ success: false, message: "No such file exists!" }); }
+            else {
+                db.all("SELECT * FROM Accounts WHERE id=(?)", [rows_images[0].userid], function (err_2, rows_accounts) {
+                    if (err) { res.json({ success: false, message: "db error has occured" }); }
+                    if (rows_accounts.length == 0) { res.json({ success: false, message: "No such user exists... somehow!" }); }
+                    else {
+                        return res.json({ success: true, filename: temp_filename, uploaded_by: rows_accounts[0].username, upload_date: rows_images[0].upload_date });
+                    }
+                })
+            }
+        })
+
+    });
 
     // /image.ext, returns image if found, otherwise failure
     router.get('/:image_url', function (req, res) {
