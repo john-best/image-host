@@ -1,1 +1,1 @@
-export const API_URL = "http://mingler.org:8421"
+export const API_URL = "http://example.com:3001";
