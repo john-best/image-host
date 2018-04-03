@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 import { withRouter } from 'react-router-dom';
 import { FormControl, FormGroup, Button, ControlLabel, Alert } from 'react-bootstrap';
+import { API_URL } from './cfg/settings';
 
-const API_URL = 'http://mingler.org:8421'
 class Upload extends Component {
     constructor(props) {
         super(props);

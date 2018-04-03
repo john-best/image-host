@@ -1,0 +1,1 @@
+export const API_URL = "http://mingler.org:8421"

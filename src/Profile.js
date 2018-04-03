@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 import { withRouter } from 'react-router-dom';
 import Image from './Image';
+import { API_URL } from './cfg/settings';
 
-const API_URL = 'http://mingler.org:8421';
 class Profile extends Component {
 
     constructor(props) {

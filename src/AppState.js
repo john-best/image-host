@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import Main from './Main'
+import { API_URL } from './cfg/settings';
 
-const API_URL = 'http://mingler.org:8421'
 class AppState extends Component {
     constructor(props) {
         super(props);
